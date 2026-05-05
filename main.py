@@ -3,8 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 import argparse
 from google.genai import types
-
-
+from prompts import system_prompt
 
 
 
@@ -26,7 +25,11 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 response = client.models.generate_content(
         model="gemini-2.5-flash",
-        contents=messages
+        contents=messages,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            temperature=0.0,
+        )
     )
 if verbose is True:
     if response.usage_metadata is not None:
@@ -39,7 +42,7 @@ if verbose is True:
 print(response.text)
 
 def main():
-    print("Hello from ai-agent-1!")
+    pass
     
 
 if __name__ == "__main__":
