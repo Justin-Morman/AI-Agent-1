@@ -4,7 +4,8 @@ from google import genai
 import argparse
 from google.genai import types
 from prompts import system_prompt
-
+from call_function import available_functions
+from functions.get_files_info import schema_get_files_info
 
 
 parser = argparse.ArgumentParser(description="Chatbot")
@@ -27,8 +28,10 @@ response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=messages,
         config=types.GenerateContentConfig(
+            tools=[available_functions],
             system_instruction=system_prompt,
-            temperature=0.0,
+            temperature=0.0
+            
         )
     )
 if verbose is True:
@@ -40,6 +43,12 @@ if verbose is True:
         raise RuntimeError("No usage metadata found")
 
 print(response.text)
+
+function_call = response.function_calls
+if function_call is not None:
+    for call in function_call:
+        print(f"Calling function: {call.name}({call.args})")
+
 
 def main():
     pass
